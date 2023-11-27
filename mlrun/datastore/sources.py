@@ -969,6 +969,7 @@ class SQLSource(BaseSourceDriver):
         spark_options: dict = None,
         time_fields: List[str] = None,
         parse_dates: List[str] = None,
+        schema: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -1019,6 +1020,7 @@ class SQLSource(BaseSourceDriver):
             "table_name": table_name,
             "db_path": db_url,
             "parse_dates": parse_dates,
+            "schema": schema,
         }
         attrs = {key: value for key, value in attrs.items() if value is not None}
         super().__init__(
@@ -1045,10 +1047,12 @@ class SQLSource(BaseSourceDriver):
 
         db_path = self.attributes.get("db_path")
         table_name = self.attributes.get("table_name")
+        schema = self.attributes.get("schema")
         parse_dates = self.attributes.get("parse_dates")
         time_field = time_field or self.time_field
         start_time = start_time or self.start_time
         end_time = end_time or self.end_time
+        
         if table_name and db_path:
             engine = sqlalchemy.create_engine(db_path)
             query, parse_dates = _generate_sql_query_with_time_filter(
@@ -1058,6 +1062,7 @@ class SQLSource(BaseSourceDriver):
                 parse_dates=parse_dates,
                 start_time=start_time,
                 end_time=end_time,
+                schema=schema,
             )
             with engine.connect() as con:
                 return pd.read_sql(
