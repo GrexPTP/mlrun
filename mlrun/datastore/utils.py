@@ -147,12 +147,14 @@ def _generate_sql_query_with_time_filter(
     parse_dates: typing.List[str],
     start_time: pd.Timestamp,
     end_time: pd.Timestamp,
+    schema: str
 ):
     table = sqlalchemy.Table(
         table_name,
         sqlalchemy.MetaData(),
         autoload=True,
         autoload_with=engine,
+        schema=schema,
     )
     query = sqlalchemy.select(table)
     if time_column:
