@@ -970,7 +970,7 @@ class SQLSource(BaseSourceDriver):
         time_fields: List[str] = None,
         parse_dates: List[str] = None,
         schema: Optional[str] = None,
-        spark_db_options = Optional[Dict] = {},
+        spark_db_options: Optional[Dict] = {},
         **kwargs,
     ):
         """
