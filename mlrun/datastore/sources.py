@@ -953,7 +953,7 @@ class KafkaSource(OnlineSource):
 class SQLSource(BaseSourceDriver):
     kind = "sqldb"
     support_storey = True
-    support_spark = False
+    support_spark = True
 
     def __init__(
         self,
@@ -970,6 +970,7 @@ class SQLSource(BaseSourceDriver):
         time_fields: List[str] = None,
         parse_dates: List[str] = None,
         schema: Optional[str] = None,
+        spark_db_options = Optional[Dict] = {},
         **kwargs,
     ):
         """
@@ -1021,6 +1022,7 @@ class SQLSource(BaseSourceDriver):
             "db_path": db_url,
             "parse_dates": parse_dates,
             "schema": schema,
+            "spark_db_options": spark_db_options,
         }
         attrs = {key: value for key, value in attrs.items() if value is not None}
         super().__init__(
@@ -1093,7 +1095,13 @@ class SQLSource(BaseSourceDriver):
             **attributes,
         )
         pass
-
+    def to_spark_df(self, session, named_view=False, time_field=None, columns=None):
+        import pyspark.sql.function as funcs
+        df = session.read.jdbc(url=self.attrs.db_path, table=self.attrs.table_name, properties=self.attrs.spark_db_options)
+        if named_view:
+            df.createOrReplaceTempView(self.name)
+        return self._filter_spark_df(df, timefield, columns)
+        
     def is_iterator(self):
         return bool(self.attributes.get("chunksize"))
 
