@@ -1097,9 +1097,6 @@ class SQLSource(BaseSourceDriver):
         pass
     def to_spark_df(self, session, named_view=False, time_field=None, columns=None):
         import pyspark.sql.functions as funcs
-        print(self.attributes.get("db_path"))
-        print(self.attributes.get("table_name"))
-        print(self.attributes.get("spark_db_options"))
         df = session.read.jdbc(url=self.attributes.get("db_path"), table=self.attributes.get("table_name"), properties=self.attributes.get("spark_db_options"))
         if named_view:
             df.createOrReplaceTempView(self.name)
