@@ -1103,7 +1103,7 @@ class SQLSource(BaseSourceDriver):
         df = session.read.jdbc(url=self.attributes.get("db_path"), table=self.attributes.get("table_name"), properties=self.attributes.get("spark_db_options"))
         if named_view:
             df.createOrReplaceTempView(self.name)
-        return self._filter_spark_df(df, timefield, columns)
+        return self._filter_spark_df(df, time_field, columns)
         
     def is_iterator(self):
         return bool(self.attributes.get("chunksize"))
